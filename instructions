@@ -1,0 +1,3 @@
+In order to initialize mongodb:
+sudo apt install mongodb-server-core
+sudo mongod --dbpath=/data --bind_ip 127.0.0.1 // or in my case I had to cd into data directory and then run sudo mongod --dbpath=/
