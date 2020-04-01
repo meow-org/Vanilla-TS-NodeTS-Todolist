@@ -20,12 +20,25 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(() => console.log(`Can’t access ${url} response. Blocked by browser?`));
 
-  function fetchPostTodo(newTodo){
+  function fetchPostTodo(newTodo:TODOS):void{
     fetch(url,{method:'POST',    headers: {'Content-Type': 'application/json',}, body:JSON.stringify(newTodo)})
     .then(data => console.log(data));
     console.log(newTodo);
     console.log(JSON.stringify(newTodo));
   }
+
+  function fetchDeleteTodo(idTodoDelete:string):void{
+    //sends to backend string with ID of todo which should be deleted
+    fetch(url,{method:'DELETE',    headers: {'Content-Type': 'text/plain',}, body:String(idTodoDelete)})
+    .then(data => console.log(data));
+  }
+
+  function fetchUpdateTodo(id:string,text:string):void{
+    let modifiedTodo:TODOS = {_id: id, todo: text};
+    fetch(url,{method:'PATCH',    headers: {'Content-Type': 'application/json',}, body:JSON.stringify(modifiedTodo)})
+    .then(data => console.log(data));
+  }
+  
 
   function createRandomId(this:void):string {
     return Math.random().toString(36).substring(2);
@@ -45,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { dataset } = <HTMLTextAreaElement>e.target;
     if(dataset.role && dataset.role === "remove"){
       delete todoList[dataset.id];//or ._id???
+      fetchDeleteTodo(dataset.id);//possible mistakes with id can be expected!
       const element:HTMLElement = document.getElementById(`parent_${dataset.id}`); // or ._id??
       fadeOut(element).then(()=>{element.remove()});
       }
@@ -78,11 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const { dataset } = <HTMLTextAreaElement>e.target;
       const text:string = e.target.innerText;
       todoList[dataset.id] = { text }; //or ._id??
+      fetchUpdateTodo(dataset.id,text);
       e.target.contentEditable=false;
       e.target.addEventListener("keydown", changeTodoList );
       }
     };
-    e.target.addEventListener("keydown", changeTodoList );
+    e.target.addEventListener("keydown", changeTodoList );//????most likely we need to remove eventlistener
     console.log(todoList);
   }
   

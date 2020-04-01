@@ -1,5 +1,5 @@
 interface TODOS {
-  id: string;
+  _id: string;
   todo: string;
 }
 
@@ -19,18 +19,10 @@ MongoClient.connect('mongodb://localhost:27017/', function(err, client) {
 
 
 // Use connect method to connect to the Server
-
-
-
-//TODELETE!
-//these are dummy data to use to test our app
-/*const dummyTodos = {'12312':'enjoy your day in the quarantine',
-'123123':'get the basics of typescript',
-'12312312312':'make a nice backend'}*/
-
 const server = http.createServer(function (request, response) {   //create web server
 
     response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader("Access-Control-Allow-Methods", "GET, PATCH, POST, DELETE");
     response.setHeader('Access-Control-Allow-Headers', 'origin, content-type, accept');
 
 
@@ -42,7 +34,7 @@ const server = http.createServer(function (request, response) {   //create web s
         // Get the documents collection
         let collection = db.collection('todos');
         // Find some documents
-        let docs = []
+        let docs = [];
         collection.find().toArray().then(data => {
           console.log(data); docs = data;})
           .then(()=> {   
@@ -67,33 +59,46 @@ const server = http.createServer(function (request, response) {   //create web s
           collection.insertOne(newTodo);
           console.log(newTodo, "is added to collection");
         })
-        console.log('there was a request to port 5000 of localhost');
-
-
         //set response header
         response.writeHead(200); 
-        //Here we need to add acquired from client json to our mongodb
-        // set response content    
-        //response.write(JSON.stringify(dummyTodos)); 
-        response.end();
-    }else if (request.url == '/' && request.method === 'DEL') { 
-        //check the URL of the current request
-        console.log('there was a request to port 5000 of localhost');
-        // set response header
-        //response.writeHead(200, { 'Content-Type': 'application/json' }); 
-        //Here we need to delete JSON specified by client
-        // set response content    
-        //response.write(JSON.stringify(dummyTodos)); 
         response.end();
 
-    } else if (request.url == '/data') { 
+    }else if (request.url == '/' && request.method === 'DELETE') { 
         //check the URL of the current request
-        console.log('there was a request to data at port 5000 of localhost');
-        // set response header
-        response.writeHead(200, { 'Content-Type': 'application/json' }); 
+        let data = [];
+        request.on('data', chunk => {
+          data.push(chunk);
+        })
         
-        // set response content    
+        request.on('end', () => {
+          console.log(data);
+          let idToDelete:string = data.toString();
+          let collection = db.collection('todos');
+          collection.remove( { _id:idToDelete }, true )
+          console.log(idToDelete, "is removed from collection");
+        })
+        //set response header
+        response.writeHead(200); 
         response.end();
+
+    }else if (request.url == '/' && request.method === 'PATCH') { 
+      //check the URL of the current request
+      let data = [];
+      request.on('data', chunk => {
+        data.push(chunk);
+      })
+      
+      request.on('end', () => {
+        console.log(data);
+        let updatedTodo:TODOS = JSON.parse(data.toString());
+        let collection = db.collection('todos');
+        collection.updateOne( {_id : updatedTodo._id}, {$set:{todo: updatedTodo.todo}});
+        console.log(updatedTodo, "was modified in collection");
+      })
+      //set response header
+      response.writeHead(200); 
+      response.end();
+
     }else
         response.end('Invalid Request!');
     }

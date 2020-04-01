@@ -20,6 +20,16 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(newTodo);
         console.log(JSON.stringify(newTodo));
     }
+    function fetchDeleteTodo(idTodoDelete) {
+        //sends to backend string with ID of todo which should be deleted
+        fetch(url, { method: 'DELETE', headers: { 'Content-Type': 'text/plain' }, body: String(idTodoDelete) })
+            .then(function (data) { return console.log(data); });
+    }
+    function fetchUpdateTodo(id, text) {
+        var modifiedTodo = { _id: id, todo: text };
+        fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(modifiedTodo) })
+            .then(function (data) { return console.log(data); });
+    }
     function createRandomId() {
         return Math.random().toString(36).substring(2);
     }
@@ -40,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var dataset = e.target.dataset;
         if (dataset.role && dataset.role === "remove") {
             delete todoList[dataset.id]; //or ._id???
+            fetchDeleteTodo(dataset.id); //possible mistakes with id can be expected!
             var element_1 = document.getElementById("parent_" + dataset.id); // or ._id??
             fadeOut(element_1).then(function () { element_1.remove(); });
         }
@@ -74,11 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 var dataset = e.target.dataset;
                 var text = e.target.innerText;
                 todoList[dataset.id] = { text: text }; //or ._id??
+                fetchUpdateTodo(dataset.id, text);
                 e.target.contentEditable = false;
                 e.target.addEventListener("keydown", changeTodoList);
             }
         };
-        e.target.addEventListener("keydown", changeTodoList);
+        e.target.addEventListener("keydown", changeTodoList); //????most likely we need to remove eventlistener
         console.log(todoList);
     }
     var input = document.getElementById('todo-input');
