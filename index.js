@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     var todoList = {};
     var url = 'http://127.0.0.1:5000';
-    //get some dummy todos
-    fetch(url).then(function (response) { return response.text(); })
+    //get some todos
+    fetch(url, { method: 'GET' }).then(function (response) { return response.text(); })
         .then(function (content) {
         var contentObj = JSON.parse(content);
-        console.log(content);
         console.log(contentObj);
         for (var _i = 0, _a = Object.entries(contentObj); _i < _a.length; _i++) {
             var _b = _a[_i], id = _b[0], text = _b[1];
@@ -13,11 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
             todoList[id] = { text: text };
             container.appendChild(todo);
         }
-        console.log(content);
     })["catch"](function () { return console.log("Can\u2019t access " + url + " response. Blocked by browser?"); });
-    //get some data
-    fetch(url).then(function (response) { return response.text(); })
-        .then(function (text) { return console.log(text); })["catch"](function () { return console.log("Can\u2019t access " + (url + '/data') + " response. Blocked by browser?"); });
+    function fetchPostTodo(newTodo) {
+        fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newTodo) })
+            .then(function (data) { return console.log(data); });
+        console.log(newTodo);
+        console.log(JSON.stringify(newTodo));
+    }
     function createRandomId() {
         return Math.random().toString(36).substring(2);
     }
@@ -26,6 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
         li.setAttribute('id', "parent_" + id);
         li.className = 'todo';
         li.innerHTML = "<span class=\"todo-text\" data-id=\"" + id + "\">" + text + "</span><button class=\"delete-todo\" data-role=\"remove\" data-id=\"" + id + "\">x</button>";
+        var newTodo = { id: id, todo: text };
+        fetchPostTodo(newTodo);
         return li;
     }
     function onListClick(e) {

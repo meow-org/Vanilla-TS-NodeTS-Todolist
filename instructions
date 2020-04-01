@@ -1,3 +1,32 @@
+//to convert index.ts to index.js (which is loaded as script in index.html)
+tsc index.ts
+
+//to start backend.ts without converting to js
+ts-node backend.ts
+
+
 In order to initialize mongodb:
 sudo apt install mongodb-server-core
 sudo mongod --dbpath=/data --bind_ip 127.0.0.1 // or in my case I had to cd into data directory and then run sudo mongod --dbpath=/
+
+//to access from shell:
+sudo apt install mongodb-clients
+
+//to enter mongodb shell:
+mongo
+
+//to switch (and create) to db :
+use todos
+
+//In order to create admin user 
+
+//didn't check the following yet
+use admin
+db.createUser(
+   {
+     user: "meow-org",
+     pwd: "yourpassword"
+     roles: [ "readWrite","dbAdmin" ]
+   }
+)
+

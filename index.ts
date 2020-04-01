@@ -6,25 +6,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let todoList = {};
   const url:string = 'http://127.0.0.1:5000';
-  //get some dummy todos
-  fetch(url).then((response)=>{return response.text();})
+  //get some todos
+  fetch(url, {method:'GET'}).then((response)=>{return response.text();})
     .then(content => {
       let contentObj:TODOS = JSON.parse(content);
-      console.log(content);
       console.log(contentObj);
       for (let [id,text] of Object.entries(contentObj)){
         const todo:HTMLElement = createTodo(id, text);
         todoList[id] = { text };
         container.appendChild(todo);
       }
-      console.log(content);})
+    })
     .catch(() => console.log(`Can’t access ${url} response. Blocked by browser?`));
 
-  //get some data
-  fetch(url).then((response)=>{return response.text();})
-    .then(text => console.log(text))
-    .catch(() => console.log(`Can’t access ${url+'/data'} response. Blocked by browser?`));
-
+  function fetchPostTodo(newTodo){
+    fetch(url,{method:'POST',    headers: {'Content-Type': 'application/json',}, body:JSON.stringify(newTodo)})
+    .then(data => console.log(data));
+    console.log(newTodo);
+    console.log(JSON.stringify(newTodo));
+  }
 
   function createRandomId(this:void):string {
     return Math.random().toString(36).substring(2);
@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     li.setAttribute('id', `parent_${id}`);
     li.className = 'todo';
     li.innerHTML = `<span class="todo-text" data-id="${id}">${text}</span><button class="delete-todo" data-role="remove" data-id="${id}">x</button>`;
+    let newTodo:TODOS = {id: id, todo: text};
+    fetchPostTodo(newTodo);
     return li
   }
 
