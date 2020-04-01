@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(contentObj);
         for (var _i = 0, _a = Object.entries(contentObj); _i < _a.length; _i++) {
             var _b = _a[_i], id = _b[0], text = _b[1];
-            var todo = createTodo(id, text);
+            console.log("the id is " + id + " and the todo is " + text + " - that's what we were passing to createTodo function");
+            var todo = createTodo(text._id, text.todo);
             todoList[id] = { text: text };
             container.appendChild(todo);
         }

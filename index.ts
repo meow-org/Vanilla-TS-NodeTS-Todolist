@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
       let contentObj:TODOS = JSON.parse(content);
       console.log(contentObj);
       for (let [id,text] of Object.entries(contentObj)){
-        const todo:HTMLElement = createTodo(id, text);
+        console.log(`the id is ${id} and the todo is ${text} - that's what we were passing to createTodo function`);
+        const todo:HTMLElement = createTodo(text._id, text.todo);
         todoList[id] = { text };
         container.appendChild(todo);
       }
