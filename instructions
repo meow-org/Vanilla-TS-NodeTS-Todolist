@@ -18,6 +18,9 @@ mongo
 //to switch (and create) to db :
 use todos
 
+//to drop current collection (named todos)
+db.todos.drop()
+
 //In order to create admin user 
 
 //didn't check the following yet

@@ -22,20 +22,24 @@ document.addEventListener('DOMContentLoaded', function () {
     function createRandomId() {
         return Math.random().toString(36).substring(2);
     }
-    function createTodo(id, text) {
+    function createTodo(id, text, fetchIt) {
+        if (fetchIt === void 0) { fetchIt = false; }
         var li = document.createElement('li');
         li.setAttribute('id', "parent_" + id);
         li.className = 'todo';
         li.innerHTML = "<span class=\"todo-text\" data-id=\"" + id + "\">" + text + "</span><button class=\"delete-todo\" data-role=\"remove\" data-id=\"" + id + "\">x</button>";
-        var newTodo = { id: id, todo: text };
-        fetchPostTodo(newTodo);
+        var newTodo = { _id: id, todo: text };
+        if (fetchIt) {
+            fetchPostTodo(newTodo);
+        }
+        ;
         return li;
     }
     function onListClick(e) {
         var dataset = e.target.dataset;
         if (dataset.role && dataset.role === "remove") {
-            delete todoList[dataset.id];
-            var element_1 = document.getElementById("parent_" + dataset.id);
+            delete todoList[dataset.id]; //or ._id???
+            var element_1 = document.getElementById("parent_" + dataset.id); // or ._id??
             fadeOut(element_1).then(function () { element_1.remove(); });
         }
     }
@@ -55,8 +59,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function onInputKeyDown(e) {
         var text = String(e.target.value);
         if (String(e.code) === "Enter" && text) {
-            var id = createRandomId();
-            var todo = createTodo(id, text);
+            var id = createRandomId(); //or ._id?
+            var todo = createTodo(id, text, true);
             todoList[id] = { text: text };
             container.appendChild(todo);
             e.target.value = "";
@@ -68,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (input.code === "Enter") {
                 var dataset = e.target.dataset;
                 var text = e.target.innerText;
-                todoList[dataset.id] = { text: text };
+                todoList[dataset.id] = { text: text }; //or ._id??
                 e.target.contentEditable = false;
                 e.target.addEventListener("keydown", changeTodoList);
             }

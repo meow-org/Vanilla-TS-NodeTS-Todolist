@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   interface TODOS {
-    id: string;
+    _id: string;
     todo: string;
   }
 
@@ -30,21 +30,21 @@ document.addEventListener('DOMContentLoaded', () => {
     return Math.random().toString(36).substring(2);
   }
 
-  function createTodo(id:string, text:string):HTMLElement{
+  function createTodo(id:string, text:string, fetchIt:boolean=false):HTMLElement{
     const li:HTMLElement = document.createElement('li');
     li.setAttribute('id', `parent_${id}`);
     li.className = 'todo';
     li.innerHTML = `<span class="todo-text" data-id="${id}">${text}</span><button class="delete-todo" data-role="remove" data-id="${id}">x</button>`;
-    let newTodo:TODOS = {id: id, todo: text};
-    fetchPostTodo(newTodo);
+    let newTodo:TODOS = {_id: id, todo: text};
+    if(fetchIt){fetchPostTodo(newTodo);};
     return li
   }
 
   function onListClick(e : Event):void {
     const { dataset } = <HTMLTextAreaElement>e.target;
     if(dataset.role && dataset.role === "remove"){
-      delete todoList[dataset.id];
-      const element:HTMLElement = document.getElementById(`parent_${dataset.id}`);
+      delete todoList[dataset.id];//or ._id???
+      const element:HTMLElement = document.getElementById(`parent_${dataset.id}`); // or ._id??
       fadeOut(element).then(()=>{element.remove()});
       }
   }
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function onInputKeyDown(e:KeyboardEvent):void {
     const text:string = String( (<HTMLInputElement>e.target).value);
     if(String((<KeyboardEvent>e).code) === "Enter" && text){
-      const id:string = createRandomId();
-      const todo:HTMLElement = createTodo(id, text);
+      const id:string = createRandomId(); //or ._id?
+      const todo:HTMLElement = createTodo(id, text, true);
       todoList[id] = { text };
       container.appendChild(todo);
       (<HTMLInputElement>e.target).value = "";
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const changeTodoList = (input) => {if(input.code === "Enter"){
       const { dataset } = <HTMLTextAreaElement>e.target;
       const text:string = e.target.innerText;
-      todoList[dataset.id] = { text };
+      todoList[dataset.id] = { text }; //or ._id??
       e.target.contentEditable=false;
       e.target.addEventListener("keydown", changeTodoList );
       }
