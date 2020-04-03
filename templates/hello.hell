@@ -1,0 +1,8 @@
+#include './main.hell'
+
+#block mic
+<h1>
+    #{name}
+</h1>
+<span>#{text}</span>
+#endblock
